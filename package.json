@@ -1,0 +1,60 @@
+{
+  "name": "helphive",
+  "version": "1.0.0",
+  "description": "A decentralized marketplace connecting people who need help with verified helpers in their area",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "contracts"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
+    "build": "npm run build --workspaces",
+    "start": "concurrently \"npm run start --workspace=backend\" \"npm run start --workspace=frontend\"",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "clean": "rimraf node_modules && npm run clean --workspaces",
+    "install:all": "npm install && npm install --workspaces",
+    "backend:dev": "npm run dev --workspace=backend",
+    "backend:build": "npm run build --workspace=backend",
+    "backend:start": "npm run start --workspace=backend",
+    "frontend:dev": "npm run dev --workspace=frontend",
+    "frontend:build": "npm run build --workspace=frontend",
+    "frontend:start": "npm run start --workspace=frontend",
+    "contracts:compile": "npm run compile --workspace=contracts",
+    "contracts:test": "npm run test --workspace=contracts",
+    "contracts:deploy": "npm run deploy --workspace=contracts",
+    "setup": "npm install && npm install --workspaces && npm run contracts:compile"
+  },
+  "keywords": [
+    "marketplace",
+    "web3",
+    "blockchain",
+    "escrow",
+    "freelance",
+    "helper",
+    "decentralized",
+    "ethereum",
+    "nextjs",
+    "typescript"
+  ],
+  "author": "HelpHive Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/helphive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/helphive/issues"
+  },
+  "homepage": "https://helphive.com"
+}
