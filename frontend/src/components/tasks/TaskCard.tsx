@@ -2,30 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  budget: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  location: {
-    address: string;
-  };
-  urgency: 'low' | 'medium' | 'high' | 'emergency';
-  estimatedDuration: number;
-  poster: {
-    name: string;
-    rating: number;
-    avatar?: string;
-  };
-  bidCount: number;
-  postedAt: string;
-}
+import { Task } from '@/types/task';
 
 interface TaskCardProps {
   task: Task;
@@ -99,6 +76,23 @@ export default function TaskCard({ task }: TaskCardProps) {
           {task.description}
         </p>
 
+        {/* Skills tags */}
+        <div className="mb-4 flex flex-wrap gap-1">
+          {task.skills.slice(0, 3).map((skill, index) => (
+            <span 
+              key={index}
+              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+            >
+              {skill}
+            </span>
+          ))}
+          {task.skills.length > 3 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+              +{task.skills.length - 3} more
+            </span>
+          )}
+        </div>
+
         <div className="flex items-center justify-between mb-4">
           <div className="text-lg font-bold text-gray-900">
             ${task.budget.min} - ${task.budget.max}
@@ -111,6 +105,21 @@ export default function TaskCard({ task }: TaskCardProps) {
             </svg>
             {task.location.address}
           </div>
+        </div>
+        
+        {/* Deadline */}
+        <div className="flex items-center justify-between mb-4 text-sm">
+          <div className="flex items-center text-gray-600">
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Deadline: {task.deadline}
+          </div>
+          {task.status && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
+              {task.status}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">

@@ -3,89 +3,43 @@
 import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import TaskCard from '@/components/tasks/TaskCard';
-
-// Mock data for demonstration
-const mockTasks = [
-  {
-    id: '1',
-    title: 'Fix leaky kitchen faucet',
-    description: 'My kitchen faucet has been dripping for a week now. It needs a quick repair. I have most of the tools but need someone experienced with plumbing.',
-    category: 'plumbing',
-    budget: { min: 50, max: 100, currency: 'USD' },
-    location: { address: 'Downtown Seattle, WA' },
-    urgency: 'medium' as const,
-    estimatedDuration: 2,
-    poster: { name: 'Sarah Johnson', rating: 4.8, avatar: '' },
-    bidCount: 3,
-    postedAt: '2 hours ago'
-  },
-  {
-    id: '2',
-    title: 'Laptop screen replacement',
-    description: 'My laptop screen cracked and needs replacement. It\'s a Dell XPS 13. Looking for someone who has experience with laptop repairs.',
-    category: 'tech support',
-    budget: { min: 200, max: 350, currency: 'USD' },
-    location: { address: 'Capitol Hill, Seattle' },
-    urgency: 'high' as const,
-    estimatedDuration: 3,
-    poster: { name: 'Mike Chen', rating: 4.5, avatar: '' },
-    bidCount: 7,
-    postedAt: '4 hours ago'
-  },
-  {
-    id: '3',
-    title: 'House cleaning service',
-    description: 'Need a thorough cleaning of my 2-bedroom apartment. Kitchen, bathrooms, living areas, and bedrooms. Pet-friendly cleaner preferred.',
-    category: 'cleaning',
-    budget: { min: 80, max: 120, currency: 'USD' },
-    location: { address: 'Bellevue, WA' },
-    urgency: 'low' as const,
-    estimatedDuration: 4,
-    poster: { name: 'Emily Rodriguez', rating: 4.9, avatar: '' },
-    bidCount: 12,
-    postedAt: '1 day ago'
-  },
-  {
-    id: '4',
-    title: 'Emergency electrical outlet repair',
-    description: 'Electrical outlet in my home office stopped working suddenly. Need urgent repair as I work from home and need power for my equipment.',
-    category: 'electrical',
-    budget: { min: 75, max: 150, currency: 'USD' },
-    location: { address: 'Redmond, WA' },
-    urgency: 'emergency' as const,
-    estimatedDuration: 1.5,
-    poster: { name: 'David Wilson', rating: 4.7, avatar: '' },
-    bidCount: 5,
-    postedAt: '30 minutes ago'
-  },
-];
-
-const categories = [
-  'All Categories',
-  'Plumbing',
-  'Tech Support',
-  'Cleaning',
-  'Electrical',
-  'Carpentry',
-  'Automotive',
-  'Tutoring',
-  'Delivery',
-  'Other'
-];
+import { mockTasks, categories } from '@/data/mockTasks';
 
 export default function TasksPage() {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [sortBy, setSortBy] = useState('newest');
   const [budgetRange, setBudgetRange] = useState({ min: '', max: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUrgency, setSelectedUrgency] = useState('');
+  const [skillFilter, setSkillFilter] = useState('');
 
   const filteredTasks = mockTasks.filter(task => {
     const matchesCategory = selectedCategory === 'All Categories' || 
       task.category.toLowerCase() === selectedCategory.toLowerCase();
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesBudget = (!budgetRange.min || task.budget.min >= parseInt(budgetRange.min)) &&
+      (!budgetRange.max || task.budget.max <= parseInt(budgetRange.max));
+    const matchesUrgency = !selectedUrgency || task.urgency === selectedUrgency;
+    const matchesSkill = !skillFilter || task.skills.some(skill => 
+      skill.toLowerCase().includes(skillFilter.toLowerCase())
+    );
     
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesSearch && matchesBudget && matchesUrgency && matchesSkill;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'budget-high':
+        return b.budget.max - a.budget.max;
+      case 'budget-low':
+        return a.budget.min - b.budget.min;
+      case 'urgent':
+        const urgencyOrder = { emergency: 4, high: 3, medium: 2, low: 1 };
+        return urgencyOrder[b.urgency] - urgencyOrder[a.urgency];
+      case 'oldest':
+        return 1; // Mock sorting - in real app would sort by date
+      default:
+        return -1; // newest first
+    }
   });
 
   return (
@@ -156,6 +110,38 @@ export default function TasksPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
+              </div>
+
+              {/* Urgency Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Urgency
+                </label>
+                <select
+                  value={selectedUrgency}
+                  onChange={(e) => setSelectedUrgency(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">All Urgencies</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="emergency">Emergency</option>
+                </select>
+              </div>
+              
+              {/* Skills Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Skills
+                </label>
+                <input
+                  type="text"
+                  value={skillFilter}
+                  onChange={(e) => setSkillFilter(e.target.value)}
+                  placeholder="Search by skills..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
 
               {/* Sort By */}
