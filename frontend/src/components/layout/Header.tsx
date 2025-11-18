@@ -20,7 +20,7 @@ export default function Header() {
     avatar: '/api/placeholder/32/32',
     unreadNotifications: 3
   });
-
+// This is handleSearch
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
